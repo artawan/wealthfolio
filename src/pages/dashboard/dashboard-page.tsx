@@ -85,7 +85,7 @@ export default function DashboardPage() {
       <div className="flex px-4 py-2 md:px-6 lg:px-10 justify-between">
         <HoverCard>
           <HoverCardTrigger className="flex cursor-pointer items-center">
-            <div className='flex items-start gp-2'>
+            <div className='flex items-start gap-2'>
               <div>
                 <Balance
                   targetValue={todayValue?.totalValue || 0}
@@ -179,7 +179,7 @@ export default function DashboardPage() {
               currency: account.currency,
             })) || []
         }
-        // activity={selectedActivity}
+        activity={undefined}
         open={showForm}
         onClose={handleFormClose}
       />
