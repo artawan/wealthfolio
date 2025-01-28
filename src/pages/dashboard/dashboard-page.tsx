@@ -1,11 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { GainAmount } from '@/components/gain-amount';
 import { GainPercent } from '@/components/gain-percent';
 import { HistoryChart } from '@/components/history-chart';
 import IntervalSelector from '@/components/interval-selector';
 import Balance from './balance';
 import { useQuery } from '@tanstack/react-query';
-import { PortfolioHistory, AccountSummary, Account } from '@/lib/types';
+import { PortfolioHistory, AccountSummary, Account, ActivityDetails } from '@/lib/types';
 import { getHistory, getAccountsSummary } from '@/commands/portfolio';
 import { getAccounts } from '@/commands/account';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -43,6 +43,7 @@ export default function DashboardPage() {
     errorTitle: 'Failed to recalculate portfolio',
   });
   const [showForm, setShowForm] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<ActivityDetails | undefined>();
 
   const { data: accounts, isLoading: isAccountsLoading } = useQuery<AccountSummary[], Error>({
     queryKey: [QueryKeys.ACCOUNTS_SUMMARY],
@@ -68,9 +69,10 @@ export default function DashboardPage() {
 
   const todayValue = portfolioHistory?.[portfolioHistory.length - 1];
 
-  const handleFormClose = useCallback(() => {
+  const handleFormClose = () => {
     setShowForm(false);
-  }, []);
+    setSelectedActivity(undefined);
+  };
 
   const handleRecalculate = async () => {
     updatePortfolioMutation.mutate({
@@ -179,7 +181,7 @@ export default function DashboardPage() {
               currency: account.currency,
             })) || []
         }
-        activity={undefined}
+        activity={selectedActivity}
         open={showForm}
         onClose={handleFormClose}
       />
