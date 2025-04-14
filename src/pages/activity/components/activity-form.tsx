@@ -368,6 +368,19 @@ const CashFields = ({ accounts }: { accounts: AccountSelectOption[] }) => {
               )}
             />
           </div>
+          <FormField
+            control={control}
+            name="comment"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Comment</FormLabel>
+                <FormControl>
+                  <Input placeholder='Comment of the transactions' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <CommonFields accounts={accounts} />
         </CardContent>
@@ -449,6 +462,19 @@ const IncomeFields = ({ accounts }: { accounts: AccountSelectOption[] }) => {
                 />
               )}
             </div>
+            <FormField
+              control={control}
+              name="comment"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Comment</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Comment of the transactions' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </>
           <CommonFields accounts={accounts} />
         </CardContent>

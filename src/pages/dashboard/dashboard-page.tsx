@@ -5,8 +5,9 @@ import { HistoryChart } from '@/components/history-chart';
 import IntervalSelector from '@/components/interval-selector';
 import Balance from './balance';
 import { useQuery } from '@tanstack/react-query';
-import { PortfolioHistory, AccountSummary } from '@/lib/types';
+import { PortfolioHistory, AccountSummary, Account, ActivityDetails } from '@/lib/types';
 import { getHistory, getAccountsSummary } from '@/commands/portfolio';
+import { getAccounts } from '@/commands/account';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accounts } from './accounts';
 import SavingGoals from './goals';
@@ -18,6 +19,7 @@ import { useCalculateHistoryMutation } from '@/hooks/useCalculateHistory';
 import { Icons } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { PrivacyToggle } from '@/components/privacy-toggle';
+import { ActivityForm } from '@/pages/activity/components/activity-form';
 
 function DashboardSkeleton() {
   return (
@@ -40,6 +42,8 @@ export default function DashboardPage() {
     successTitle: 'Portfolio recalculated successfully',
     errorTitle: 'Failed to recalculate portfolio',
   });
+  const [showForm, setShowForm] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<ActivityDetails | undefined>();
 
   const { data: accounts, isLoading: isAccountsLoading } = useQuery<AccountSummary[], Error>({
     queryKey: [QueryKeys.ACCOUNTS_SUMMARY],
@@ -54,11 +58,21 @@ export default function DashboardPage() {
     queryFn: () => getHistory('TOTAL'),
   });
 
+  const { data: accountsSelection } = useQuery<Account[], Error>({
+    queryKey: [QueryKeys.ACCOUNTS],
+    queryFn: getAccounts,
+  });
+
   if (isPortfolioHistoryLoading || isAccountsLoading) {
     return <DashboardSkeleton />;
   }
 
   const todayValue = portfolioHistory?.[portfolioHistory.length - 1];
+
+  const handleFormClose = () => {
+    setShowForm(false);
+    setSelectedActivity(undefined);
+  };
 
   const handleRecalculate = async () => {
     updatePortfolioMutation.mutate({
@@ -70,10 +84,10 @@ export default function DashboardPage() {
   return (
     <div className="flex h-screen flex-col">
       <div data-tauri-drag-region="true" className="draggable h-8 w-full"></div>
-      <div className="flex px-4 py-2 md:px-6 lg:px-10">
+      <div className="flex px-4 py-2 md:px-6 lg:px-10 justify-between">
         <HoverCard>
           <HoverCardTrigger className="flex cursor-pointer items-center">
-            <div className="flex items-start gap-2">
+            <div className='flex items-start gap-2'>
               <div>
                 <Balance
                   targetValue={todayValue?.totalValue || 0}
@@ -129,6 +143,12 @@ export default function DashboardPage() {
             </div>
           </HoverCardContent>
         </HoverCard>
+        <Button variant="outline" size="sm"
+          onClick={() => setShowForm(true)}
+        >
+          <Icons.PlusCircle className="mr-2 h-4 w-4" />
+          Add Transaction
+        </Button>
       </div>
 
       <div className="h-[300px]">
@@ -151,6 +171,20 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      <ActivityForm
+        accounts={
+          accountsSelection
+            ?.filter((acc) => acc.isActive)
+            .map((account) => ({
+              value: account.id,
+              label: account.name,
+              currency: account.currency,
+            })) || []
+        }
+        activity={selectedActivity}
+        open={showForm}
+        onClose={handleFormClose}
+      />
     </div>
   );
 }

@@ -91,7 +91,7 @@ const renderActiveShape = (props: any) => {
             whiteSpace: 'nowrap',
           }}
         >
-          <AmountDisplay value={value} currency="USD" isHidden={isBalanceHidden} />
+          <AmountDisplay value={value} currency="IDR" isHidden={isBalanceHidden} />
         </div>
       </foreignObject>
     </g>
