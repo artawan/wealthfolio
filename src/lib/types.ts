@@ -76,6 +76,7 @@ export type ActivitySearchResponse = {
   data: ActivityDetails[];
   meta: {
     totalRowCount: number;
+    totalValue: number;
   };
 };
 
@@ -513,4 +514,3 @@ export type TrackedItem = {
   type: 'account' | 'symbol';
   name: string;
 };
-

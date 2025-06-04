@@ -359,6 +359,7 @@ export const ActivityTable = ({
 
   const flatData = React.useMemo(() => data?.pages?.flatMap((page) => page.data) ?? [], [data]);
   const totalDBRowCount = data?.pages?.[0]?.meta?.totalRowCount ?? 0;
+  const totalAmount = data?.pages?.[0].meta?.totalValue ?? 0;
   const totalFetched = flatData.length;
 
   const fetchMoreOnBottomReached = React.useCallback(
@@ -495,6 +496,14 @@ export const ActivityTable = ({
       <div className="flex pl-2 text-xs text-muted-foreground">
         {isFetching ? <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" /> : null}
         {totalFetched} / {totalDBRowCount} activities
+        <div className='px-1 text-muted-foreground'>
+        |
+        </div>
+        Total Amount: {Intl.NumberFormat('en-US', {
+          // style: 'currency' ,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(totalAmount)}
       </div>
     </div>
   );

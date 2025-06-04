@@ -101,8 +101,11 @@ impl ActivityRepositoryTrait for ActivityRepository {
             if let Some(ref activity_types) = activity_type_filter {
                 query = query.filter(activities::activity_type.eq_any(activity_types));
             }
+
             if let Some(ref keyword) = asset_id_keyword {
-                query = query.filter(assets::id.like(format!("%{}%", keyword)));
+                if asset_id_keyword.is_none() != true{
+                    query = query.filter(activities::comment.like(format!("%{}%", keyword)));
+                }
             }
 
             // Apply sorting
@@ -177,9 +180,17 @@ impl ActivityRepositoryTrait for ActivityRepository {
             .offset(offset)
             .load::<ActivityDetails>(&mut conn)?;
 
+        let total_value: Decimal = results.clone().into_iter().map(|x| {
+            if let Some(ref amount_str) = x.amount{
+                Decimal::from_str(amount_str.as_str()).unwrap_or(Decimal::ZERO)
+            }else {
+                Decimal::ZERO
+            }
+        }).sum();
+
         Ok(ActivitySearchResponse {
             data: results,
-            meta: ActivitySearchResponseMeta { total_row_count },
+            meta: ActivitySearchResponseMeta { total_row_count, total_value },
         })
     }
 
@@ -352,7 +363,7 @@ impl ActivityRepositoryTrait for ActivityRepository {
             // Convert NewActivity to ActivityDB for insertion
             let activities_db: Vec<ActivityDB> =
                 activities.into_iter().map(ActivityDB::from).collect();
-            let count = activities_db.len(); 
+            let count = activities_db.len();
 
             // Perform batch insert
             diesel::insert_into(activities::table)
@@ -360,7 +371,7 @@ impl ActivityRepositoryTrait for ActivityRepository {
                 .execute(conn)?;
 
             Ok(count) // Return the stored count
-        })?; 
+        })?;
 
         Ok(inserted_count) // Return the count from the successful transaction
     }

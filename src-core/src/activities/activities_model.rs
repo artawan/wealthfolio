@@ -99,15 +99,15 @@ impl NewActivity {
                 "Activity type cannot be empty".to_string(),
             ));
         }
-        
+
         // Validate date format
-        if DateTime::parse_from_rfc3339(&self.activity_date).is_err() 
+        if DateTime::parse_from_rfc3339(&self.activity_date).is_err()
             && NaiveDate::parse_from_str(&self.activity_date, "%Y-%m-%d").is_err() {
             return Err(crate::activities::ActivityError::InvalidData(
                 "Invalid date format. Expected ISO 8601/RFC3339 or YYYY-MM-DD".to_string(),
             ));
         }
-        
+
         Ok(())
     }
 }
@@ -252,6 +252,7 @@ impl ActivityDetails {
 #[serde(rename_all = "camelCase")]
 pub struct ActivitySearchResponseMeta {
     pub total_row_count: i64,
+    pub total_value: Decimal,
 }
 
 /// Model for activity search response
@@ -460,18 +461,18 @@ mod timestamp_format {
         D: Deserializer<'de>,
     {
         let s = String::deserialize(deserializer)?;
-        
+
         // First try parsing as RFC3339/ISO8601
         if let Ok(dt) = DateTime::parse_from_rfc3339(&s) {
             return Ok(dt.with_timezone(&Utc));
         }
-        
+
         // Then try as date-only format
         if let Ok(date) = NaiveDate::parse_from_str(&s, "%Y-%m-%d") {
             // Use midnight UTC for date-only values
             return Ok(Utc.from_utc_datetime(&date.and_hms_opt(0, 0, 0).unwrap_or_default()));
         }
-        
+
         Err(serde::de::Error::custom(format!(
             "Invalid timestamp format: {}. Expected ISO 8601/RFC3339 or YYYY-MM-DD",
             s
@@ -531,7 +532,7 @@ impl From<ActivityDB> for Activity {
 impl From<NewActivity> for ActivityDB {
     fn from(domain: NewActivity) -> Self {
         let now = Utc::now();
-        
+
         // Parse the date and normalize to UTC
         let activity_datetime = DateTime::parse_from_rfc3339(&domain.activity_date)
             .map(|dt| dt.with_timezone(&Utc))
@@ -548,9 +549,9 @@ impl From<NewActivity> for ActivityDB {
 
         // Handle cash activities and splits
         let activity_type = domain.activity_type.as_str();
-        let is_cash_or_split = activity_type == "DEPOSIT" || 
-                              activity_type == "WITHDRAWAL" || 
-                              activity_type == "FEE" || 
+        let is_cash_or_split = activity_type == "DEPOSIT" ||
+                              activity_type == "WITHDRAWAL" ||
+                              activity_type == "FEE" ||
                               activity_type == "INTEREST" ||
                               activity_type == "DIVIDEND" ||
                               activity_type == "SPLIT" ||
@@ -596,7 +597,7 @@ impl From<NewActivity> for ActivityDB {
 impl From<ActivityUpdate> for ActivityDB {
     fn from(domain: ActivityUpdate) -> Self {
         let now = Utc::now();
-        
+
         // Use the same date parsing logic as NewActivity for consistency
         let activity_datetime = DateTime::parse_from_rfc3339(&domain.activity_date)
             .map(|dt| dt.with_timezone(&Utc))
@@ -611,9 +612,9 @@ impl From<ActivityUpdate> for ActivityDB {
 
         // Handle cash activities and splits
         let activity_type = domain.activity_type.as_str();
-        let is_cash_or_split = activity_type == "DEPOSIT" || 
-                              activity_type == "WITHDRAWAL" || 
-                              activity_type == "FEE" || 
+        let is_cash_or_split = activity_type == "DEPOSIT" ||
+                              activity_type == "WITHDRAWAL" ||
+                              activity_type == "FEE" ||
                               activity_type == "INTEREST" ||
                               activity_type == "DIVIDEND" ||
                               activity_type == "SPLIT" ||

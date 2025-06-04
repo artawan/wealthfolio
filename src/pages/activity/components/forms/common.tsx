@@ -97,6 +97,19 @@ export const CommonFields = ({ accounts }: { accounts: AccountSelectOption[] }) 
     <>
       <FormField
         control={control}
+        name="comment"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Comment</FormLabel>
+            <FormControl>
+              <Input placeholder='Comment of the transactions' {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
         name="accountId"
         render={({ field }) => (
           <FormItem>
@@ -175,4 +188,4 @@ export function AssetSymbolInput({ field, isManualAsset }: { field: any; isManua
       <FormMessage className="text-xs" />
     </FormItem>
   );
-} 
+}

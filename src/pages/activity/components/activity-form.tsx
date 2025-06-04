@@ -89,7 +89,7 @@ export function ActivityForm({ accounts, activity, open, onClose }: ActivityForm
     resolver: zodResolver(newActivitySchema),
     defaultValues,
   });
-  
+
   // Reset form when dialog closes or activity changes
   useEffect(() => {
     if (!open) {
@@ -128,7 +128,7 @@ export function ActivityForm({ accounts, activity, open, onClose }: ActivityForm
     }
   }
 
-  const defaultTab = activity ? ACTIVITY_TYPE_TO_TAB[activity.activityType] || 'holdings' : 'holdings';
+  const defaultTab = activity ? ACTIVITY_TYPE_TO_TAB[activity.activityType] || 'cash' : 'cash';
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
