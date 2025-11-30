@@ -238,6 +238,7 @@ export const ActivityTable = ({
         header: ({ column }) => <DataTableColumnHeader column={column} title="Currency" />,
         cell: ({ row }) => <div>{row.getValue('currency')}</div>,
         enableHiding: false,
+<<<<<<< HEAD
       },
       {
         id: 'comment',
@@ -251,9 +252,11 @@ export const ActivityTable = ({
             </div>
           );
         },
+=======
+>>>>>>> main
       },
       {
-        id: 'accountName',
+        id: 'account',
         accessorKey: 'accountName',
         enableSorting: false,
         enableHiding: true,
