@@ -238,22 +238,6 @@ export const ActivityTable = ({
         header: ({ column }) => <DataTableColumnHeader column={column} title="Currency" />,
         cell: ({ row }) => <div>{row.getValue('currency')}</div>,
         enableHiding: false,
-<<<<<<< HEAD
-      },
-      {
-        id: 'comment',
-        accessorKey: 'comment',
-        enableSorting: false,
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Comment" />,
-        cell: ({ row }) => {
-          return (
-            <div className="ml-2 flex min-w-[50px] flex-col">
-              <span className="text-xs font-light">{row.getValue('comment')}</span>
-            </div>
-          );
-        },
-=======
->>>>>>> main
       },
       {
         id: 'account',
